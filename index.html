@@ -578,6 +578,34 @@
             setNotifications(prev => prev.filter(n => n.chargeId !== chargeId));
           };
 
+          const modifierMontantCharge = (chargeId) => {
+            const charge = chargesFixesAuto.find(c => c.id === chargeId);
+            if (!charge) return;
+            
+            const nouveauMontant = prompt(
+              `Modifier le montant de "${charge.nom}" :\n\nMontant actuel : ${formatMoney(charge.montant)}`,
+              charge.montant.toFixed(2)
+            );
+            
+            if (nouveauMontant !== null && nouveauMontant.trim() !== '') {
+              const parsed = parseFloat(nouveauMontant);
+              if (!isNaN(parsed) && parsed >= 0) {
+                // Mettre à jour la charge
+                const updatedCharges = chargesFixesAuto.map(c => 
+                  c.id === chargeId ? { ...c, montant: parsed } : c
+                );
+                setChargesFixesAuto(updatedCharges);
+                
+                // Mettre à jour la notification
+                setNotifications(prev => prev.map(n => 
+                  n.chargeId === chargeId ? { ...n, montant: parsed } : n
+                ));
+              } else {
+                alert('Montant invalide');
+              }
+            }
+          };
+
           const handleAddDepense = (e) => {
             e.preventDefault();
             if (newDepense.montant && newDepense.categorie) {
@@ -800,10 +828,10 @@
                       <span>Charges à payer aujourd'hui</span>
                     </div>
                     {notifications.map(notif => (
-                      <div key={notif.id} className={`mt-2 flex items-center justify-between rounded-lg p-3 ${
+                      <div key={notif.id} className={`mt-2 flex items-center justify-between gap-3 rounded-lg p-3 ${
                         darkMode ? 'bg-gray-800' : 'bg-white'
                       }`}>
-                        <div>
+                        <div className="flex-1">
                           <div className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
                             {notif.chargeName}
                             {notif.daysPassed > 0 && (
@@ -814,12 +842,27 @@
                           </div>
                           <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{formatMoney(notif.montant)}</div>
                         </div>
-                        <button
-                          onClick={() => toggleChargePaiement(notif.chargeId)}
-                          className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700"
-                        >
-                          Valider
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              modifierMontantCharge(notif.chargeId);
+                            }}
+                            className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                              darkMode 
+                                ? "bg-blue-900/30 text-blue-300 hover:bg-blue-900/50" 
+                                : "bg-blue-50 text-blue-700 hover:bg-blue-100"
+                            }`}
+                          >
+                            Modifier
+                          </button>
+                          <button
+                            onClick={() => toggleChargePaiement(notif.chargeId)}
+                            className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700"
+                          >
+                            Valider
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -889,7 +932,7 @@
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className={`text-lg font-bold ${darkMode ? "text-white" : "text-gray-800"}`}>Charges fixes</h3>
-                        <p className={`text-sm mt-1 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                        <p className={`text-sm mt-1 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
                           {chargesFixesAuto.filter(c => chargesPayees[getCurrentMonthKey()]?.[c.id]).length} / {chargesFixesAuto.length} payées
                         </p>
                       </div>
@@ -897,7 +940,7 @@
                         <div className={`text-3xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>
                           {formatMoney(totalChargesFixes)}
                         </div>
-                        <p className={`text-xs mt-1 ${darkMode ? "text-gray-500" : "text-gray-500"}`}>👆 Cliquez pour gérer</p>
+                        <p className={`text-xs mt-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>👆 Cliquez pour gérer</p>
                       </div>
                     </div>
                   </div>
