@@ -927,12 +927,16 @@
                 {chargesFixesAuto.length > 0 ? (
                   <div 
                     onClick={() => setShowChargesModal(true)}
-                    className={`cursor-pointer rounded-2xl p-6 shadow-lg transition hover:shadow-xl ${darkMode ? "bg-gray-800" : "bg-white"}`}
+                    className={`cursor-pointer rounded-2xl p-6 shadow-lg transition hover:shadow-xl ${
+                      darkMode 
+                        ? "bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-gray-700" 
+                        : "bg-white"
+                    }`}
                   >
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className={`text-lg font-bold ${darkMode ? "text-white" : "text-gray-800"}`}>Charges fixes</h3>
-                        <p className={`text-sm mt-1 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+                        <p className={`text-sm mt-1 font-medium ${darkMode ? "text-gray-200" : "text-gray-600"}`}>
                           {chargesFixesAuto.filter(c => chargesPayees[getCurrentMonthKey()]?.[c.id]).length} / {chargesFixesAuto.length} payées
                         </p>
                       </div>
@@ -940,7 +944,7 @@
                         <div className={`text-3xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>
                           {formatMoney(totalChargesFixes)}
                         </div>
-                        <p className={`text-xs mt-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>👆 Cliquez pour gérer</p>
+                        <p className={`text-xs mt-1 font-medium ${darkMode ? "text-gray-300" : "text-gray-500"}`}>👆 Cliquez pour gérer</p>
                       </div>
                     </div>
                   </div>
